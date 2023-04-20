@@ -8,6 +8,12 @@ from tkcalendar import DateEntry
 conn = sqlite3.connect("expense.db")
 curs = conn.cursor()
 
+# Create expense table if it doesn't exist
+curs.execute(
+    """CREATE TABLE IF NOT EXISTS expense (id INTEGER PRIMARY KEY, date TEXT, category TEXT, amount REAL)"""
+)
+conn.commit()
+
 
 # Function to add an expense
 def add_expense():
@@ -20,11 +26,6 @@ def add_expense():
     date_entry.delete(0, tk.END)
     category_entry.delete(0, tk.END)
     amount_entry.delete(0, tk.END)
-
-    # Create expense table if it doesn't exist
-    curs.execute(
-        """CREATE TABLE IF NOT EXISTS expense (id INTEGER PRIMARY KEY, date TEXT, category TEXT, amount REAL)"""
-    )
 
     # Insert expense into the database
     curs.execute(
@@ -45,10 +46,10 @@ def view():
 
     # Fetch all expenses from the database
     curs.execute("""SELECT * FROM expense""")
-    expenses = curs.fetchall()
+    all_expenses = curs.fetchall()
 
     # Insert expenses into the expense tree view
-    for expense in expenses:
+    for expense in all_expenses:
         expense_tree.insert(
             "", "end", values=(expense[0], expense[1], expense[2], expense[3])
         )
